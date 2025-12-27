@@ -1,0 +1,37 @@
+name: Frontend Unit Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci || npm install
+
+      - name: Run unit tests
+        run: |
+          cd frontend
+          npm test --silent
+        env:
+          CI: true
+
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-logs
+          path: frontend/test-results || frontend/jest-output.log || frontend/coverage || frontend/.output || frontend/**/jest*.log
