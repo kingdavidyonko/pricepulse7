@@ -1,10 +1,30 @@
+# Dependencies
 node_modules/
 frontend/node_modules/
-package-lock.json
-frontend/package-lock.json
-demo/seed-visuals.json
+
+# Next.js
+frontend/.next/
+frontend/out/
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+frontend/.env.local
+
+# Build outputs
+dist/
+build/
+
+# IDEs and OS
 .idea/
 .vscode/
-dist/
 .DS_Store
-node_modules/\nfrontend/node_modules/\n
+*.swp
+*.log
+
+# Project specific
+demo/seed-visuals.json
+supabase/.temp/
