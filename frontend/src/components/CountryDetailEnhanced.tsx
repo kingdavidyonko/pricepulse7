@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Camera, Infocircled, Info, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
 import TrendChart from './TrendChart';
 import { exportSnapshot } from '../utils/exportSnapshot';
 import { rollingAverage } from '../utils/rollingAverage';
@@ -24,125 +25,63 @@ export default function CountryDetailEnhanced({ country, series }: any) {
   const submissions_count = series.length ? series.reduce((a: any, b: any) => (a + (b.sample_count || 0)), 0) : 0;
 
   return (
-    <div className="country-detail-container" aria-label={`country-detail-${country?.iso2 || country?.id}`}>
-      <div className="detail-header">
-        <h3>{country?.name || 'Country'} ({country?.iso2})</h3>
-        <div className="lag-badge" title="World Bank CPI updates monthly. PricePulse updates in real time.">
-          ℹ️ Real-time vs Official Lag
+    <div className="glass-panel rounded-2xl p-6 border border-white/5 flex flex-col h-full animate-fade-in country-detail-container">
+      <div className="flex justify-between items-start mb-6">
+        <div>
+          <h3 className="text-xl font-bold text-white tracking-tight">{country?.name || 'Country'}</h3>
+          <p className="text-xs text-zinc-500 font-mono mt-0.5">{country?.iso2}</p>
+        </div>
+        <div className="flex items-center gap-1.5 px-2 py-1 bg-zinc-900 border border-white/5 rounded text-[10px] text-zinc-400 font-medium cursor-help uppercase tracking-wider" title="World Bank CPI updates monthly. PricePulse updates in real time.">
+          <Info size={12} /> Real-time vs Official
         </div>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card pricepulse">
-          <label>PricePulse Avg</label>
-          <div className="value">${avg ? avg.toFixed(2) : 'N/A'}</div>
-          <div className="subtext">Based on {submissions_count} submissions</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+          <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-1">PricePulse Avg</span>
+          <div className="text-2xl font-bold text-white tracking-tight">${avg ? avg.toFixed(2) : 'N/A'}</div>
+          <p className="text-[10px] text-zinc-500 mt-1">{submissions_count} submissions</p>
         </div>
 
         {wbData?.inflation && (
-          <div className="stat-card macro">
-            <label>Annual Inflation (WB)</label>
-            <div className="value">{wbData.inflation.value.toFixed(1)}%</div>
-            <div className="subtext">Year: {wbData.inflation.date}</div>
+          <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-1">Annual Inflation (WB)</span>
+            <div className="text-2xl font-bold text-white tracking-tight">{wbData.inflation.value.toFixed(1)}%</div>
+            <p className="text-[10px] text-zinc-500 mt-1">Reported: {wbData.inflation.date}</p>
           </div>
         )}
-
-        <div className="stat-card rolling">
-          <label>4-Week Rolling</label>
-          <div className="value">${rolling.length ? rolling[rolling.length - 1].toFixed(2) : 'N/A'}</div>
-          <div className="subtext">Confidence Score: {confidence ?? 'N/A'}</div>
-        </div>
       </div>
 
-      <div className="chart-section">
-        <h4>Price Trend vs Official CPI</h4>
-        <div className="chart-wrapper">
+      <div className="flex-1 min-h-[250px] mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Price Trend Analysis</h4>
+          <span className="text-[10px] text-zinc-600 font-mono">Conf: {confidence ? (confidence * 100).toFixed(0) + '%' : 'N/A'}</span>
+        </div>
+        <div className="h-[200px] w-full relative">
           <TrendChart
             data={series}
             wbData={wbData?.history?.cpi?.slice().reverse()}
-            labelP="PricePulse (Weekly)"
-            labelW="World Bank CPI (Monthly)"
+            labelP="PricePulse"
+            labelW="Official CPI"
           />
         </div>
-        <p className="chart-note">Solid line: PricePulse | Dotted line: World Bank CPI</p>
       </div>
 
-      <div className="actions">
-        <button className="export-btn" onClick={async () => { const blob = await exportSnapshot(document.querySelector('.country-detail-container') as HTMLElement); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `${country?.iso2 || 'country'}_snapshot.png`; a.click(); }}>
-          📷 Export Snapshot
+      <div className="mt-auto flex items-center gap-3">
+        <button
+          onClick={async () => {
+            const blob = await exportSnapshot(document.querySelector('.country-detail-container') as HTMLElement);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `${country?.iso2 || 'country'}_snapshot.png`;
+            a.click();
+          }}
+          className="flex-1 bg-white text-zinc-950 font-bold text-sm py-2.5 rounded-lg flex items-center justify-center gap-2 hover:bg-zinc-200 transition-colors shadow-lg shadow-white/5 active:scale-[0.98] transition-transform"
+        >
+          <Camera size={16} />
+          Export Snapshot
         </button>
       </div>
-
-      <style jsx>{`
-        .country-detail-container {
-          padding: 20px;
-          background: #fff;
-          border-radius: 12px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-          max-width: 600px;
-        }
-        .detail-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 20px;
-        }
-        .lag-badge {
-          font-size: 12px;
-          background: #f1f5f9;
-          padding: 4px 8px;
-          border-radius: 20px;
-          color: #64748b;
-          cursor: help;
-        }
-        .stats-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr 1fr;
-          gap: 12px;
-          margin-bottom: 24px;
-        }
-        .stat-card {
-          padding: 12px;
-          border-radius: 8px;
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-        }
-        .stat-card.pricepulse { border-top: 4px solid #4f46e5; }
-        .stat-card.macro { border-top: 4px solid #10b981; }
-        .stat-card label {
-          font-size: 11px;
-          text-transform: uppercase;
-          color: #64748b;
-          font-weight: 600;
-        }
-        .stat-card .value {
-          font-size: 20px;
-          font-weight: 700;
-          color: #1e293b;
-          margin: 4px 0;
-        }
-        .stat-card .subtext {
-          font-size: 10px;
-          color: #94a3b8;
-        }
-        .chart-section { margin-top: 20px; }
-        .chart-note {
-          font-size: 11px;
-          color: #94a3b8;
-          text-align: center;
-          margin-top: 8px;
-        }
-        .export-btn {
-          width: 100%;
-          padding: 10px;
-          background: #1e293b;
-          color: #fff;
-          border: none;
-          border-radius: 6px;
-          font-weight: 600;
-          cursor: pointer;
-        }
-      `}</style>
     </div>
   );
 }

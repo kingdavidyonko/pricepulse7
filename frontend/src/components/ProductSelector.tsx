@@ -1,66 +1,35 @@
 import React from 'react';
 
-export default function ProductSelector({ selected, onSelect }: any) {
-  const products = [
-    { slug: 'rice', name: '🍚 Rice', icon: '🍚' },
-    { slug: 'bread', name: '🍞 Bread', icon: '🍞' },
-    { slug: 'milk', name: '🥛 Milk', icon: '🥛' },
-    { slug: 'eggs', name: '🥚 Eggs', icon: '🥚' },
-    { slug: 'oil', name: '🛢️ Cooking Oil', icon: '🛢️' }
-  ];
+const products = [
+  { slug: 'rice', name: 'Rice', icon: '🍚' },
+  { slug: 'bread', name: 'Bread', icon: '🍞' },
+  { slug: 'milk', name: 'Milk', icon: '🥛' },
+  { slug: 'eggs', name: 'Eggs', icon: '🥚' },
+  { slug: 'oil', name: 'Cooking Oil', icon: '🛢️' }
+];
 
+export default function ProductSelector({ selected, onSelect }: any) {
   return (
-    <div className="product-selector">
-      <label>Track Commodity</label>
-      <div className="product-grid">
+    <div className="flex flex-col gap-2">
+      <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest px-1">Track Commodity</label>
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-2">
         {products.map(p => (
           <button
             key={p.slug}
-            className={selected === p.slug ? 'active' : ''}
             onClick={() => onSelect(p.slug)}
+            className={`
+              flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-all
+              ${selected === p.slug
+                ? 'bg-white text-zinc-950 border-white shadow-lg shadow-white/5'
+                : 'bg-zinc-900/50 text-zinc-400 border-white/5 hover:bg-zinc-900 hover:text-white'
+              }
+            `}
           >
-            {p.name}
+            <span className="text-sm">{p.icon}</span>
+            <span className="truncate">{p.name}</span>
           </button>
         ))}
       </div>
-      <style jsx>{`
-        .product-selector label {
-          display: block;
-          font-size: 11px;
-          text-transform: uppercase;
-          color: #64748b;
-          font-weight: 700;
-          margin-bottom: 12px;
-          letter-spacing: 0.05em;
-        }
-        .product-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 8px;
-        }
-        button {
-          padding: 10px;
-          text-align: left;
-          background: #fff;
-          border: 1px solid #e2e8f0;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 13px;
-          color: #475569;
-          transition: all 0.2s;
-        }
-        button:hover {
-          background: #f8fafc;
-          border-color: #cbd5e1;
-        }
-        button.active {
-          background: #eff6ff;
-          border-color: #3b82f6;
-          color: #2563eb;
-          font-weight: 600;
-          box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
-        }
-      `}</style>
     </div>
   );
 }
